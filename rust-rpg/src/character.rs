@@ -33,4 +33,89 @@ pub trait Player {
     fn stats(&self) -> String;
 }
 
+impl Player for Character {
+    fn new(
+        name: String,
+        class_name: String,
+        health: i32,
+        attack: i32,
+        dodge: i32,
+        luck: i32,
+    ) -> Character {
+        Character {
+            name: name.to_string(),
+            class: class_name.to_string(),
+            health: health,
+            attack: attack,
+            dodge: dodge,
+            luck: luck,
+            xp: 0,
+        }
+    }
 
+    fn select(&self, player_name: String, player_luck: i32) -> Self {
+        Self::new(
+            player_name,
+            self.class.to_string(),
+            self.health,
+            self.attack,
+            self.dodge,
+            player_luck,
+        )
+    }
+
+    fn damage(&mut self, damage_amount: i32) {
+        self.health -= damage_amount;
+        self.xp += 2;
+    }
+
+    fn heal(&mut self, heal_amount: i32) {
+        self.health += heal_amount;
+        self.xp += 1;
+    }
+
+    fn attack(&self) -> i32 {
+        self.xp + self.attack + self.luck / 2
+    }
+
+    fn dodge(&self) -> i32 {
+        self.xp + self.dodge + self.luck / 2
+    }
+
+    fn info(&self) -> String {
+        format!(
+            "{} \thp: {} attack: {} dodge: {} luck: {}",
+            self.class, self.health, self.attack, self.dodge, self.luck
+        )
+    }
+
+    fn stats(&self) -> String {
+        format!(
+            "{} - hp: {} atttack: {} dodge: {} luck: {} xp: {}",
+            self.class, self.health, self.attack, self.dodge, self.luck, self.xp
+        )
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_attack() {
+        const EXPECTED_ATTACK: i32 = 6;
+        let player = Character::new(
+            "Bill".to_string(), 
+            "Rouge".to_string(), 
+            1, 
+            4, 
+            1, 
+            4
+        );
+
+        let result = player.attack();
+
+        assert_eq!(result, EXPECTED_ATTACK);
+    }
+}
