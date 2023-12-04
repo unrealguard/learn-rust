@@ -1,4 +1,6 @@
-use std::{env, fs, process};
+use std::{env, process};
+
+use minigrep::Config;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -11,29 +13,8 @@ fn main() {
     println!("Searching for value: {}", config.query);
     println!("In path: {}", config.file_path);
 
-    let contents = fs::read_to_string(config.file_path)
-        .expect("Should have been able to read the file");
-
-    println!("With file contents:\n{contents}");
-}
-
-struct Config {
-    query: String,
-    file_path: String,
-}
-
-impl Config {
-    fn build(args: &Vec<String>) -> Result<Config, &'static str> {
-        if args.len() < 3 {
-            return Err("Expected at least 3 arguments");
-        }
-
-        let query: &String = &args[1];
-        let file_path: &String = &args[2];
-
-        Ok(Config {
-            query: query.clone(),
-            file_path: file_path.clone(),
-        })
+    if let Err(e) = minigrep::run(config) {
+        println!("Application error: {e}");
+        process::exit(1);
     }
 }
