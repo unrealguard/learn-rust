@@ -1,10 +1,8 @@
 #![allow(non_snake_case)]
-use components::story_listing::StoryPageData;
+use core::{PreviewState, components::{story_listing::{StoryListing, StoryItem}, comment::Comment}};
+
 // import the prelude to get access to the `rsx!` macro and the `Scope` and `Element` types
 use dioxus::prelude::*;
-use crate::components::{story_listing::{StoryListing, StoryItem}, comment::Comment};
-
-mod components;
 
 fn main() {
     // launch the web app
@@ -49,12 +47,6 @@ fn Stories(cx: Scope) -> Element {
     }
 }
 
-#[derive(Clone, Debug)]
-enum PreviewState {
-    Unset,
-    Loading,
-    Loaded(StoryPageData),
-}
 
 fn Preview(cx: Scope) -> Element {
     let preview_state = use_shared_state::<PreviewState>(cx)?;
