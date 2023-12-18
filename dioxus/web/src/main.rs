@@ -1,7 +1,8 @@
 #![allow(non_snake_case)]
+use components::story_listing::StoryPageData;
 // import the prelude to get access to the `rsx!` macro and the `Scope` and `Element` types
 use dioxus::prelude::*;
-use crate::components::story_listing::{StoryListing, StoryItem};
+use crate::components::{story_listing::{StoryListing, StoryItem}, comment::Comment};
 
 mod components;
 
@@ -12,6 +13,24 @@ fn main() {
 
 fn App(cx: Scope) -> Element {
     cx.render(rsx! {
+        div {
+            display: "flex",
+            flex_direction: "row",
+            width: "100%",
+            div {
+                width: "50%",
+                Stories {}
+            }
+            div {
+                width: "50%",
+                Preview {}
+            }
+        }
+    })
+}
+
+fn Stories(cx: Scope) -> Element {
+    render! {
         StoryListing {
             story: StoryItem {
                 id: 0,
@@ -26,5 +45,47 @@ fn App(cx: Scope) -> Element {
                 r#type: "".to_string(),
             }
         }
-    })
+    }
+}
+
+#[derive(Clone, Debug)]
+enum PreviewState {
+    Unset,
+    Loading,
+    Loaded(StoryPageData),
+}
+
+fn Preview(cx: Scope) -> Element {
+    let preview_state = PreviewState::Unset;
+    match preview_state {
+        PreviewState::Unset => render! {
+            "Hover over a story to preview it here"
+        },
+        PreviewState::Loading => render! {
+            "Loading ..."
+        },
+        PreviewState::Loaded(story) => {
+            let title = story.item.title;
+            let url = story.item.url.as_deref().unwrap_or_default();
+            let text = story.item.text.as_deref().unwrap_or_default();
+            render! {
+                div {
+                    padding: "0.5rem",
+                    div {
+                        font_size: "1.5rem",
+                        a {
+                            href: "{url}",
+                            {title}
+                        }
+                    }
+                }
+                div {
+                    dangerous_inner_html: "{text}"
+                }
+                for comment in &story.comments {
+                    Comment { comment: comment.clone() }
+                }
+            }
+        }
+    }
 }

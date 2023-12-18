@@ -4,6 +4,8 @@ use chrono::{DateTime, Utc};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
+use super::comment::Comment;
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StoryPageData {
     #[serde(flatten)]
@@ -28,22 +30,6 @@ pub struct StoryItem {
     pub time: DateTime<Utc>,
     #[serde(default)]
     pub kids: Vec<i64>,
-    pub r#type: String,
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Comment {
-    pub id: i64,
-    #[serde(default)]
-    pub by: String,
-    #[serde(default)]
-    pub text: String,
-    #[serde(with = "chrono::serde::ts_seconds")]
-    pub time: DateTime<Utc>,
-    #[serde(default)]
-    pub kids: Vec<i64>,
-    #[serde(default)]
-    pub sub_comments: Vec<Comment>,
     pub r#type: String,
 }
 
