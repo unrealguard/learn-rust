@@ -12,6 +12,7 @@ fn main() {
 }
 
 fn App(cx: Scope) -> Element {
+    use_shared_state_provider(cx, || PreviewState::Unset);
     cx.render(rsx! {
         div {
             display: "flex",
@@ -56,8 +57,8 @@ enum PreviewState {
 }
 
 fn Preview(cx: Scope) -> Element {
-    let preview_state = PreviewState::Unset;
-    match preview_state {
+    let preview_state = use_shared_state::<PreviewState>(cx)?;
+    match &*preview_state.read() {
         PreviewState::Unset => render! {
             "Hover over a story to preview it here"
         },
@@ -65,7 +66,7 @@ fn Preview(cx: Scope) -> Element {
             "Loading ..."
         },
         PreviewState::Loaded(story) => {
-            let title = story.item.title;
+            let title = &*story.item.title;
             let url = story.item.url.as_deref().unwrap_or_default();
             let text = story.item.text.as_deref().unwrap_or_default();
             render! {

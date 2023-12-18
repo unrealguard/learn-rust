@@ -4,6 +4,8 @@ use chrono::{DateTime, Utc};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
+use crate::PreviewState;
+
 use super::comment::Comment;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -66,15 +68,27 @@ pub fn StoryListing(cx: Scope, story: StoryItem) -> Element {
     );
 
     let time = time.format("%D %l:%M %p");
-
+    let preview_state = use_shared_state::<PreviewState>(cx).unwrap();
     cx.render(rsx! {
         div {
             padding: "-1.5rem",
             position: "relative",
+            onmouseenter: move |_| {
+                *preview_state.write() = PreviewState::Loaded(StoryPageData {
+                    item: story.clone(),
+                    comments: vec![],
+                });
+            },
             div {
                 font_size: "1.5rem",
                 a {
                     href: url,
+                    onfocus: move |_event| {
+                        *preview_state.write() = PreviewState::Loaded(StoryPageData {
+                            item: story.clone(),
+                            comments: vec![]
+                        })
+                    },
                     "{title}"
                 }
                 a {
