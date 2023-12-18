@@ -13,3 +13,9 @@ sudo apt install libssl-dev pkg-config perl make
 cargo install dioxus-cli
 rustup target add wasm32-unknown-unknown
 ```
+
+## Running App
+
+```bash
+dx serve
+```
