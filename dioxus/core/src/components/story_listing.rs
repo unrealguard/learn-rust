@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::PreviewState;
+use crate::{PreviewState, hackernews_adatper::api::get_story};
 
 use super::comment::Comment;
 
@@ -35,6 +35,23 @@ pub struct StoryItem {
     pub r#type: String,
 }
 
+async fn resolve_story(
+    full_story: UseRef<Option<StoryPageData>>,
+    preview_state: UseSharedState<PreviewState>,
+    story_id: i64,
+) {
+    if let Some(cached) = &*full_story.read() {
+        *preview_state.write() = PreviewState::Loaded(cached.clone());
+        return;
+    }
+
+    *preview_state.write() = PreviewState::Loading;
+    if let Ok(story) = get_story(story_id).await {
+        *preview_state.write() = PreviewState::Loaded(story.clone());
+        *full_story.write() = Some(story)
+    }
+}
+
 #[component]
 pub fn StoryListing(cx: Scope, story: StoryItem) -> Element {
     let StoryItem {
@@ -44,6 +61,7 @@ pub fn StoryListing(cx: Scope, story: StoryItem) -> Element {
         score,
         time,
         kids,
+        id,
         ..
     } = story;
 
@@ -69,25 +87,20 @@ pub fn StoryListing(cx: Scope, story: StoryItem) -> Element {
 
     let time = time.format("%D %l:%M %p");
     let preview_state = use_shared_state::<PreviewState>(cx).unwrap();
+    let full_story = use_ref(cx, || None::<StoryPageData>);
     cx.render(rsx! {
         div {
             padding: "-1.5rem",
             position: "relative",
             onmouseenter: move |_| {
-                *preview_state.write() = PreviewState::Loaded(StoryPageData {
-                    item: story.clone(),
-                    comments: vec![],
-                });
+                resolve_story(full_story.clone(), preview_state.clone(), *id)
             },
             div {
                 font_size: "1.5rem",
                 a {
                     href: url,
                     onfocus: move |_event| {
-                        *preview_state.write() = PreviewState::Loaded(StoryPageData {
-                            item: story.clone(),
-                            comments: vec![]
-                        })
+                        resolve_story(full_story.clone(), preview_state.clone(), *id)
                     },
                     "{title}"
                 }

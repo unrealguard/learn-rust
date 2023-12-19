@@ -1,4 +1,4 @@
-use core::hackernews_adatper::api::{get_stories, get_comment};
+use core::hackernews_adatper::api::{get_stories, get_comment, get_story};
 
 #[test]
 fn get_stories_works() {
@@ -9,6 +9,16 @@ fn get_stories_works() {
         let number_of_stories = stories.unwrap().len();
         println!("Number of stories: {}", number_of_stories);
         assert!(number_of_stories > 0);
+    });
+}
+
+#[test]
+fn get_story_works() {
+    tokio_test::block_on(async {
+        let story_id = 38695337;
+        let story = get_story(story_id).await;
+        assert!(story.is_ok());
+        assert_eq!(story.unwrap().item.id, story_id);
     });
 }
 

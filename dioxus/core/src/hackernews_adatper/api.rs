@@ -1,6 +1,8 @@
 use futures_util::future::join_all;
-
-use crate::components::{comment::Comment, story_listing::StoryItem};
+use crate::components::{
+    comment::Comment,
+    story_listing::{StoryItem, StoryPageData},
+};
 
 pub static BASE_API_URL: &str = "https://hacker-news.firebaseio.com/v0/";
 pub static ITEM_API: &str = "item/";
@@ -30,6 +32,19 @@ pub async fn get_stories(
         .collect();
 
     Ok(stories)
+}
+
+pub async fn get_story(id: i64) -> Result<StoryPageData, reqwest::Error> {
+    let url = format!("{}{}{}.json", BASE_API_URL, ITEM_API, id);
+    let mut story = reqwest::get(&url).await?.json::<StoryPageData>().await?;
+    let comment_futures = story.item.kids.iter().map(|&id| get_comment(id));
+    let comments = join_all(comment_futures)
+        .await
+        .into_iter()
+        .filter_map(|c| c.ok())
+        .collect();
+    story.comments = comments;
+    Ok(story)
 }
 
 #[async_recursion::async_recursion(?Send)]

@@ -1,5 +1,5 @@
 #![allow(non_snake_case)]
-use core::{PreviewState, components::{story_listing::{StoryListing, StoryItem}, comment::Comment}};
+use core::{PreviewState, components::{story_listing::StoryListing, comment::Comment}, hackernews_adatper::api::get_stories};
 
 // import the prelude to get access to the `rsx!` macro and the `Scope` and `Element` types
 use dioxus::prelude::*;
@@ -29,21 +29,24 @@ fn App(cx: Scope) -> Element {
 }
 
 fn Stories(cx: Scope) -> Element {
-    render! {
-        StoryListing {
-            story: StoryItem {
-                id: 0,
-                title: "hello hackernews".to_string(),
-                url: None,
-                text: None,
-                by: "William Jones".to_string(),
-                score: 0,
-                descendants: 0,
-                time: chrono::Utc::now(),
-                kids: vec![],
-                r#type: "".to_string(),
+    let stories = use_future(cx, (), |_| get_stories(10));
+
+    match stories.value() {
+        Some(Ok(list)) => {
+            render! {
+                div {
+                    for story in list {
+                        StoryListing { story: story.clone() }
+                    }
+                }
             }
-        }
+        },
+        Some(Err(err)) => {
+            render! {"An error occured while fetching stories {err}" }
+        },
+        None => {
+            render! { "Loading items" }
+        },
     }
 }
 
