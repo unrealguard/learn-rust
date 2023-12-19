@@ -7,6 +7,7 @@ fn get_stories_works() {
         assert!(stories.is_ok());
 
         let number_of_stories = stories.unwrap().len();
+        println!("Number of stories: {}", number_of_stories);
         assert!(number_of_stories > 0);
-    })
+    });
 }

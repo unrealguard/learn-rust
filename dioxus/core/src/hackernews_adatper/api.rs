@@ -1,14 +1,14 @@
-use futures::future::join_all;
+use futures_util::future::join_all;
 
 use crate::components::story_listing::StoryItem;
 
-pub static BASE_API_URL: &str = "https://hacker-news.firebaseio.com/v-1/";
+pub static BASE_API_URL: &str = "https://hacker-news.firebaseio.com/v0/";
 pub static ITEM_API: &str = "item/";
 pub static USER_API: &str = "user/";
 const COMMENT_DEPTH: i64 = 2;
 
 pub async fn get_story_preview(id: i64) -> Result<StoryItem, reqwest::Error> {
-    let url = format!("{}{}{}", BASE_API_URL, ITEM_API, id);
+    let url = format!("{}{}{}.json", BASE_API_URL, ITEM_API, id);
     reqwest::get(&url).await?.json().await
 }
 

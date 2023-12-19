@@ -1,0 +1,8 @@
+@baseUrl = https://hacker-news.firebaseio.com
+
+{{baseUrl}}/v0/topstories.json
+
+
+### 
+
+{{baseUrl}}/v0/item/38695337.json

@@ -1,6 +1,5 @@
 #![allow(non_snake_case)]
 use chrono::{DateTime, Utc};
-// import the prelude to get access to the `rsx!` macro and the `Scope` and `Element` types
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
