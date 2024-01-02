@@ -1,26 +1,34 @@
-use components::story_listing::StoryPageData;
+#![allow(non_snake_case)]
 
-pub mod components;
+use components::stories::preview::PreviewState;
+use dioxus::prelude::*;
+use dioxus_router::components::Router;
+
+use crate::route::Route;
+
+mod components;
+mod route;
 pub mod hackernews_adatper;
 
-#[derive(Clone, Debug)]
-pub enum PreviewState {
-    Unset,
-    Loading,
-    Loaded(StoryPageData),
+pub fn App(cx: Scope) -> Element {
+    use_shared_state_provider(cx, || PreviewState::Unset);
+    cx.render(rsx! {
+        div {
+            display: "flex",
+            flex_direction: "row",
+            width: "100%",
+            Router::<Route> {}
+        }
+    })
 }
 
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[test]
     fn add_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+        assert_eq!(4, 4);
     }
 }

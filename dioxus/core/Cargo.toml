@@ -12,6 +12,7 @@ reqwest = { version = "0.11.23", features = ["json"] }
 serde = { version = "1.0.193", features = ["derive"] }
 dioxus = { version = "0.4.3", default-features = false, features = ["macro", "hooks", "html"]}
 async-recursion = "1.0.5"
+dioxus-router = "0.4.3"
 
 [dev-dependencies]
 tokio-test = "0.4.3"

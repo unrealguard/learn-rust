@@ -4,9 +4,9 @@ use chrono::{DateTime, Utc};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::{PreviewState, hackernews_adatper::api::get_story};
+use crate::hackernews_adatper::api::get_story;
 
-use super::comment::Comment;
+use super::{comment::Comment, preview::PreviewState};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StoryPageData {

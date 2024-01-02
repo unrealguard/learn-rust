@@ -1,12 +1,8 @@
 use futures_util::future::join_all;
-use crate::components::{
-    comment::Comment,
-    story_listing::{StoryItem, StoryPageData},
-};
+use crate::components::{stories::comment::Comment, stories::story_listing::{StoryItem, StoryPageData}};
 
 pub static BASE_API_URL: &str = "https://hacker-news.firebaseio.com/v0/";
 pub static ITEM_API: &str = "item/";
-pub static USER_API: &str = "user/";
 const COMMENT_DEPTH: i64 = 2;
 
 pub async fn get_story_preview(id: i64) -> Result<StoryItem, reqwest::Error> {
